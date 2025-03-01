@@ -197,7 +197,7 @@
         // @FindBy(xpath = “//*[@id=\’AddRecordPageTab’\]”
         // private WebElement addRecordPageTab_webElement;
         const snippet =
-`@FindBy(xpath = “//*[@id=\’${safeId}\’\]”)
+`@FindBy(xpath = “//*[@id=\’${safeId}\’]”)
 private WebElement ${variableName}_webElement;`;
 
         results.push(snippet);
