@@ -9,11 +9,11 @@
     <style>
         /* Cyberpunk color palette */
         :root {
-            --cyberpunk-bg: #222222; /* Dark background */
-            --cyberpunk-primary: #98A3A7; /* Neon cyan */
-            --cyberpunk-secondary: #e0e0e0; /* Neon magenta */
-            --cyberpunk-accent: #e0e0e0; /* Neon yellow */
-            --cyberpunk-text: #e0e0e0; /* Light gray for text */
+            --cyberpunk-bg: #222222; /* Dark background (altered) */
+            --cyberpunk-primary: #98A3A7; /* Neon cyan (altered) */
+            --cyberpunk-secondary: #e0e0e0; /* Neon magenta (altered) */
+            --cyberpunk-accent: #e0e0e0; /* Neon yellow (altered) */
+            --cyberpunk-text: #e0e0e0; /* Light gray for text (altered) */
         }
 
         /* Global styles */
@@ -21,6 +21,7 @@
             font-family: 'Orbitron', sans-serif;
             margin: 0;
             background-color: var(--cyberpunk-bg);
+            background-image: url('path-to-background.jpg'); /* Replace with an image path */
             background-size: cover;
             background-position: center;
             color: var(--cyberpunk-text);
@@ -67,7 +68,7 @@
 
         /* Header styles */
         .sematrica-header {
-            padding: 3rem 1rem 2rem;
+            padding: 3rem 1rem 4rem;
             text-align: center;
             background: rgba(22, 22, 22, 0.9);
             backdrop-filter: blur(50px);
@@ -82,26 +83,10 @@
             text-shadow: 0 0 10px var(--cyberpunk-primary);
         }
 
-        /* Quote Section */
-        .quote-section {
-            text-align: center;
-            font-size: 1.4rem;
-            font-weight: 500;
-            padding: 1.5rem 2rem;
-            margin: 2rem auto 2rem;
-            max-width: 900px;
-            background: rgba(30, 30, 30, 0.9);
-            border: 1px solid var(--cyberpunk-primary);
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(152, 163, 167, 0.4);
-            text-shadow: 0 0 8px var(--cyberpunk-secondary);
-            color: var(--cyberpunk-text);
-        }
-
         /* Grid container styles */
         .grid-container {
             max-width: 1200px;
-            margin: 0 auto 4rem;
+            margin: -3rem auto 4rem;
             padding: 0 1rem;
         }
 
@@ -111,11 +96,73 @@
             gap: 2rem;
         }
 
+        /* Tool card styles */
+        .tool-card {
+            background: rgba(20, 20, 20, 0.9);
+            border: 1px solid var(--cyberpunk-primary);
+            border-radius: 18px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.1);
+            transition: all 0.3s ease-in-out;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 3px 30px rgba(100, 200, 222, 0.5);
+            border-color: var(--cyberpunk-secondary);
+        }
+
+        .tool-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem;
+            color: var(--cyberpunk-primary);
+        }
+
+        /* Tool tag styles */
+        .tool-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: var(--cyberpunk-text);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .tool-tag.tagone {
+            background: linear-gradient(135deg, #32d7c7, ##32d7c7);
+        }
+
+        .tool-tag.tagtwo {
+            background: linear-gradient(135deg, #32d745, #32d745);
+        }
+
+        .tool-tag.tagthree {
+            background: linear-gradient(135deg, #3248d7, #3248d7);
+        }
+
+        .tool-tag.tagfour {
+            background: linear-gradient(135deg, #d7328d, #d7328d);
+        }
+
+        .tool-tag.tagfive {
+            background: linear-gradient(135deg, #c4d732, #c4d732);
+        }
+
+
         /* Footer styles */
         .apple-footer {
             background: rgba(0, 0, 0, 0.8);
             color: var(--cyberpunk-text);
             padding: 3rem 1rem;
+            margin-top: 4rem;
             text-align: center;
             border-top: 1px solid var(--cyberpunk-primary);
         }
@@ -140,15 +187,9 @@
                 flex-direction: column;
                 gap: 1rem;
             }
-
-            .quote-section {
-                font-size: 1.2rem;
-                padding: 1rem;
-            }
         }
-
         @media (min-width: 769px) and (max-width: 1200px) {
-            .header-title {
+           .header-title {
                 font-size: 2.5rem;
             }
         }
@@ -161,6 +202,7 @@
         <ul class="nav-links">
             <li><a href="https://sematrica.github.io">Sematrica</a></li>
             <li><a href="https://github.com/sematrica">Sematrica GitHub</a></li>
+
         </ul>
     </div>
 </nav>
@@ -169,15 +211,11 @@
     <h3 class="header-title">Tool Registry</h3>
 </header>
 
-<!-- Quote Section -->
-<div class="quote-section">
-    “There is nothing more permanent than a temporary solution that works..”
-</div>
-
 <div class="grid-container">
     <div class="tools-grid">
+        <!-- Updated Tool Cards with Standardized Tags -->
         <a href="https://sematrica.github.io/screen-detect-img/" class="tool-card">
-            <div class="tool-tag ar">ai-enabled</div>
+            <div class="tool-tag clear">ai-enabled</div>
             <div class="tool-name">IMG Screen</div>
         </a>
 
@@ -186,15 +224,107 @@
         </a>
 
         <a href="https://sematrica.github.io/ephemeral/" class="tool-card">
-            <div class="tool-tag vr">vr</div>
+            <div class="tool-tag clear">vr</div>
             <div class="tool-name">Ephemeral</div>
         </a>
 
+        <!-- Remaining tool cards updated similarly -->
         <a href="https://sematrica.github.io/AWED-WordEmbTr/" class="tool-card">
-            <div class="tool-tag concat-data">concat-data</div>
+            <div class="tool-tag clear">concat-data</div>
             <div class="tool-name">WordEmbTr</div>
         </a>
-    </div>
+
+        <a href="https://sematrica.github.io/dreabstract/" class="tool-card">
+            <div class="tool-tag clear">vr</div>
+            <div class="tool-name">Nippon_Abstract</div>
+        </a>
+
+        <a href="https://sematrica.github.io/Text-Analysis-and-Validation/" class="tool-card">
+            <div class="tool-tag clear">analyze</div>
+            <div class="tool-name">Text Validation </div>
+        </a>
+
+        <a href="https://sematrica.github.io/per_labeler/" class="tool-card">
+            <div class="tool-tag clear">ai-enabled</div>
+            <div class="tool-tag clear">web-automation</div>
+            <div class="tool-name">PER Labeler</div>
+        </a>
+
+        <a href="https://sematrica.github.io/kernelCube/" class="tool-card">
+            <div class="tool-tag clear">ai-enabled</div>
+            <div class="tool-tag clear">web-automation</div>
+            <div class="tool-name">Kernel Cube</div>
+        </a>
+
+        <a href="https://sematrica.github.io/Custom-Tool-2/" class="tool-card">
+            <div class="tool-name">Custom Tool 2</div>
+        </a>
+
+        <a href="https://sematrica.github.io/KurpedDDY/" class="tool-card">
+            <div class="tool-tag clear">ai-enabled</div>
+            <div class="tool-tag clear">web-automation</div>
+            <div class="tool-name">Kurped DDY</div>
+        </a>
+
+        <a href="https://sematrica.github.io/LongLatinText/" class="tool-card">
+            <div class="tool-name">Long Latin Text</div>
+        </a>
+
+        <a href="https://sematrica.github.io/paste-uppercase/" class="tool-card">
+            <div class="tool-name">Paste-Uppercase</div>
+        </a>
+
+        <a href="https://sematrica.github.io/buffer-ide/" class="tool-card">
+            <div class="tool-name">Buffer-ride-IDE</div>
+        </a>
+
+        <a href="https://sematrica.github.io/zlg-tool/" class="tool-card">
+            <div class="tool-name">Zalgo Glitch</div>
+        </a>
+
+        <a href="https://sematrica.github.io/Useful-Links/" class="tool-card">
+            <div class="tool-name">Useful-links</div>
+        </a>
+
+        <a href="https://sematrica.github.io/DeepSeekV3_LinkLibrary/" class="tool-card">
+            <div class="tool-name">useful_ds_v3</div>
+        </a>
+
+        <a href="https://sematrica.github.io/event_spheres/" class="tool-card">
+            <div class="tool-name">EvtSphereParticles</div>
+            <div class="tool-tag concat-data">JS-Heavy</div>
+
+       <a href="https://sematrica.github.io/CodeBuilder/" class="tool-card">
+            <div class="tool-name">POM FindBy Builder</div>
+            <div class="tool-tag clear">IDE</div>
+
+           <a href="https://sematrica.github.io/catch_circle/" class="tool-card">
+           <div class="tool-name">Catch_Circle</div>
+           <div class="tool-tag clear">focus</div>
+
+       <a href="https://sematrica.github.io/event_horizon-I/" class="tool-card">
+            <div class="tool-name">event_sphere I</div>
+            <div class="tool-tag clear">JS-Heavy</div>
+
+           <a href="https://sematrica.github.io/event_horizon-II/" class="tool-card">
+            <div class="tool-name">event_sphere II</div>
+            <div class="tool-tag clear">JS-Heavy</div>
+
+       <a href="https://sematrica.github.io/robot_panda/" class="tool-card">
+            <div class="tool-name">robot_run_panda</div>
+            <div class="tool-tag clear">vr</div>
+
+       <a href="https://sematrica.github.io/gitCheetSheet/" class="tool-card">
+            <div class="tool-name">Git-CheatSheet I</div>
+            <div class="tool-tag clear">git</div>
+
+
+        <!-- ... rest of tool cards with updated tags ... -->
+        <a href="https://sematrica.github.io/Context-AI-DataSet/" class="tool-card">
+            <div class="tool-name">Context-AI</div>
+            <div class="tool-tag concat-data">concat-dataset-hc</div>
+        </a>
+</div>
 </div>
 
 <footer class="apple-footer">
