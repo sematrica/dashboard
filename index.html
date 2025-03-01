@@ -1,336 +1,287 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sematrica Tools Registry</title>
-    <!-- Importing the 'Orbitron' font for a futuristic look -->
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="utf-8" />
+    <title>Curly Quote @FindBy Generator</title>
+
     <style>
-        /* Cyberpunk color palette */
-        :root {
-            --cyberpunk-bg: #222222; /* Dark background (altered) */
-            --cyberpunk-primary: #98A3A7; /* Neon cyan (altered) */
-            --cyberpunk-secondary: #e0e0e0; /* Neon magenta (altered) */
-            --cyberpunk-accent: #e0e0e0; /* Neon yellow (altered) */
-            --cyberpunk-text: #e0e0e0; /* Light gray for text (altered) */
+    /* ============ Dark IDE-like styling ============ */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Consolas, Menlo, Monaco, "Courier New", monospace;
+      background-color: #1e1e1e;
+      color: #d4d4d4;
+    }
+    .title-bar {
+      background-color: #333;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 14px;
+      color: #fff;
+    }
+    .title-bar .title:before {
+      content: "IDE — ";
+      color: #aaa;
+    }
+    .editor-container {
+      display: flex;
+      height: calc(100vh - 35px);
+    }
+    .sidebar {
+      width: 50px;
+      background-color: #252526;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 10px;
+    }
+    .sidebar .icon {
+      width: 28px;
+      height: 28px;
+      background-color: #404040;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .sidebar .icon:hover {
+      background-color: #505050;
+      cursor: pointer;
+    }
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #1e1e1e;
+    }
+    .file-tab {
+      background-color: #2d2d2d;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      border-bottom: 1px solid #333;
+    }
+    .file-tab .filename {
+      color: #fff;
+      font-size: 13px;
+    }
+    .content {
+      flex: 1;
+      display: flex;
+      padding: 10px;
+    }
+    .input-panel, .output-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .input-panel {
+      margin-right: 10px;
+    }
+    .panel-title {
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #aaa;
+    }
+    textarea {
+      flex: 1;
+      background-color: #2d2d2d;
+      color: #dcdcdc;
+      border: 1px solid #555;
+      padding: 8px;
+      font-size: 13px;
+      resize: vertical;
+    }
+    .buttons {
+      margin-top: 8px;
+    }
+    .buttons button {
+      background-color: #007acc;
+      border: none;
+      color: #fff;
+      padding: 6px 12px;
+      margin-right: 8px;
+      border-radius: 3px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .buttons button:hover {
+      background-color: #0088ff;
+    }
+    .code-block {
+      flex: 1;
+      background-color: #1e1e1e;
+      border: 1px solid #555;
+      margin-top: 8px;
+      padding: 8px;
+      overflow: auto;
+      font-size: 13px;
+      color: #eee;
+      white-space: pre-wrap; /* so newlines are preserved */
+    }
+    .status-bar {
+      height: 22px;
+      background-color: #007acc;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 10px;
+      color: #fff;
+      font-size: 12px;
+    }
+  </style>
+
+    <script>
+    /**
+     * generateSnippets():
+     * 1. Normalizes any curly quotes or apostrophes in user input -> standard quotes.
+     * 2. Extracts the ID from either a raw ID or an XPath like //*[@id="SomeID"].
+     * 3. Produces a snippet with curly double quotes for the entire string,
+     *    plus \’ for single quotes, and \[ / \] for brackets.
+     */
+    function generateSnippets() {
+      // 1) Grab user input
+      let rawInput = document.getElementById("inputLines").value;
+
+      // Normalize “fancy” quotes in the user input to standard quotes:
+      // So we can parse it consistently:
+      rawInput = rawInput
+        .replace(/[“”]/g, '"')  // fancy double quotes -> normal "
+        .replace(/[‘’]/g, "'"); // fancy single quotes -> normal '
+
+      const lines = rawInput.split(/\r?\n/);
+      const results = [];
+
+      for (let line of lines) {
+        line = line.trim();
+        if (!line) continue;
+
+        let elementId;
+
+        // If line starts with '//*[@id="', parse out what's in quotes
+        if (line.startsWith('//*[@id="')) {
+          const parts = line.split('"');
+          // parts[1] should be the ID
+          if (parts.length >= 2) {
+            elementId = parts[1];
+          } else {
+            elementId = line;
+          }
+        } else {
+          elementId = line;
         }
 
-        /* Global styles */
-        body {
-            font-family: 'Orbitron', sans-serif;
-            margin: 0;
-            background-color: var(--cyberpunk-bg);
-            background-image: url('path-to-background.jpg'); /* Replace with an image path */
-            background-size: cover;
-            background-position: center;
-            color: var(--cyberpunk-text);
-            line-height: 1.5;
+        // 2) Build the variable name by decapitalizing first letter (optional)
+        let variableName = elementId;
+        if (elementId.length > 0 && /[A-Za-z]/.test(elementId[0])) {
+          variableName = elementId[0].toLowerCase() + elementId.slice(1);
         }
 
-        /* Navigation bar styles */
-        .sematrica-nav {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 0 1rem;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+        // 3) The user wants *curly quotes* around the entire @FindBy string
+        //    and we must escape brackets [ -> \[ and ] -> \], plus single quotes ' -> \’.
+        //    So we do some text replacements:
+        let safeId = elementId
+          .replace(/\[/g, '\\[')
+          .replace(/\]/g, '\\]')
+          .replace(/'/g, '\\’');
+
+        // 4) Build the snippet line with curly double quotes “...”
+        //    and \’ for single quotes inside
+        // Example:
+        // @FindBy(xpath = “//*[@id=\’AddRecordPageTab’\]”
+        // private WebElement addRecordPageTab_webElement;
+        const snippet =
+`@FindBy(xpath = “//*[@id=\\’${safeId}\\’\\]”)
+private WebElement ${variableName}_webElement;`;
+
+        results.push(snippet);
+      }
+
+      // 5) Join snippets with a blank line
+      const finalCode = results.join("\n\n");
+
+      // 6) Put it in the output panel
+      document.getElementById("outputCode").textContent = finalCode;
+    }
+
+    // Copy the output
+    function copyOutput() {
+      const textToCopy = document.getElementById("outputCode").textContent;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy).then(
+          () => alert("Copied to clipboard!"),
+          () => alert("Failed to copy. Please copy manually.")
+        );
+      } else {
+        // fallback
+        const temp = document.createElement("textarea");
+        temp.value = textToCopy;
+        document.body.appendChild(temp);
+        temp.select();
+        try {
+          document.execCommand("copy");
+          alert("Copied to clipboard!");
+        } catch (err) {
+          alert("Failed to copy. Please copy manually.");
         }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--cyberpunk-primary);
-            font-size: 0.9rem;
-            padding: 1rem 0;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--cyberpunk-secondary);
-        }
-
-        /* Header styles */
-        .sematrica-header {
-            padding: 3rem 1rem 4rem;
-            text-align: center;
-            background: rgba(22, 22, 22, 0.9);
-            backdrop-filter: blur(50px);
-        }
-
-        .header-title {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin: 0;
-            color: var(--cyberpunk-accent);
-            text-shadow: 0 0 10px var(--cyberpunk-primary);
-        }
-
-        /* Grid container styles */
-        .grid-container {
-            max-width: 1200px;
-            margin: -3rem auto 4rem;
-            padding: 0 1rem;
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
-        /* Tool card styles */
-        .tool-card {
-            background: rgba(20, 20, 20, 0.9);
-            border: 1px solid var(--cyberpunk-primary);
-            border-radius: 18px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 255, 255, 0.1);
-            transition: all 0.3s ease-in-out;
-            text-decoration: none;
-            color: inherit;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 3px 30px rgba(100, 200, 222, 0.5);
-            border-color: var(--cyberpunk-secondary);
-        }
-
-        .tool-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin: 0 0 0.5rem;
-            color: var(--cyberpunk-primary);
-        }
-
-        /* Tool tag styles */
-        .tool-tag {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            color: var(--cyberpunk-text);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            backdrop-filter: blur(10px);
-        }
-
-        .tool-tag.tagone {
-            background: linear-gradient(135deg, #32d7c7, ##32d7c7);
-        }
-
-        .tool-tag.tagtwo {
-            background: linear-gradient(135deg, #32d745, #32d745);
-        }
-
-        .tool-tag.tagthree {
-            background: linear-gradient(135deg, #3248d7, #3248d7);
-        }
-
-        .tool-tag.tagfour {
-            background: linear-gradient(135deg, #d7328d, #d7328d);
-        }
-
-        .tool-tag.tagfive {
-            background: linear-gradient(135deg, #c4d732, #c4d732);
-        }
-
-
-        /* Footer styles */
-        .apple-footer {
-            background: rgba(0, 0, 0, 0.8);
-            color: var(--cyberpunk-text);
-            padding: 3rem 1rem;
-            margin-top: 4rem;
-            text-align: center;
-            border-top: 1px solid var(--cyberpunk-primary);
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            font-size: 0.9rem;
-        }
-
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            .header-title {
-                font-size: 2rem;
-            }
-
-            .tools-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .nav-links {
-                flex-direction: column;
-                gap: 1rem;
-            }
-        }
-        @media (min-width: 769px) and (max-width: 1200px) {
-           .header-title {
-                font-size: 2.5rem;
-            }
-        }
-    </style>
+        document.body.removeChild(temp);
+      }
+    }
+  </script>
 </head>
 <body>
-<!-- New Navigation Bar -->
-<nav class="sematrica-nav">
-    <div class="nav-container">
-        <ul class="nav-links">
-            <li><a href="https://sematrica.github.io">Sematrica</a></li>
-            <li><a href="https://github.com/sematrica">Sematrica GitHub</a></li>
-
-        </ul>
-    </div>
-</nav>
-
-<header class="sematrica-header">
-    <h3 class="header-title">Tool Registry</h3>
-</header>
-
-<div class="grid-container">
-    <div class="tools-grid">
-        <!-- Updated Tool Cards with Standardized Tags -->
-        <a href="https://sematrica.github.io/screen-detect-img/" class="tool-card">
-            <div class="tool-tag clear">ai-enabled</div>
-            <div class="tool-name">IMG Screen</div>
-        </a>
-
-        <a href="https://sematrica.github.io/Custom-Tool-1/" class="tool-card">
-            <div class="tool-name">Custom Tools 1</div>
-        </a>
-
-        <a href="https://sematrica.github.io/ephemeral/" class="tool-card">
-            <div class="tool-tag clear">vr</div>
-            <div class="tool-name">Ephemeral</div>
-        </a>
-
-        <!-- Remaining tool cards updated similarly -->
-        <a href="https://sematrica.github.io/AWED-WordEmbTr/" class="tool-card">
-            <div class="tool-tag clear">concat-data</div>
-            <div class="tool-name">WordEmbTr</div>
-        </a>
-
-        <a href="https://sematrica.github.io/dreabstract/" class="tool-card">
-            <div class="tool-tag clear">vr</div>
-            <div class="tool-name">Nippon_Abstract</div>
-        </a>
-
-        <a href="https://sematrica.github.io/Text-Analysis-and-Validation/" class="tool-card">
-            <div class="tool-tag clear">analyze</div>
-            <div class="tool-name">Text Validation </div>
-        </a>
-
-        <a href="https://sematrica.github.io/per_labeler/" class="tool-card">
-            <div class="tool-tag clear">ai-enabled</div>
-            <div class="tool-tag clear">web-automation</div>
-            <div class="tool-name">PER Labeler</div>
-        </a>
-
-        <a href="https://sematrica.github.io/kernelCube/" class="tool-card">
-            <div class="tool-tag clear">ai-enabled</div>
-            <div class="tool-tag clear">web-automation</div>
-            <div class="tool-name">Kernel Cube</div>
-        </a>
-
-        <a href="https://sematrica.github.io/Custom-Tool-2/" class="tool-card">
-            <div class="tool-name">Custom Tool 2</div>
-        </a>
-
-        <a href="https://sematrica.github.io/KurpedDDY/" class="tool-card">
-            <div class="tool-tag clear">ai-enabled</div>
-            <div class="tool-tag clear">web-automation</div>
-            <div class="tool-name">Kurped DDY</div>
-        </a>
-
-        <a href="https://sematrica.github.io/LongLatinText/" class="tool-card">
-            <div class="tool-name">Long Latin Text</div>
-        </a>
-
-        <a href="https://sematrica.github.io/paste-uppercase/" class="tool-card">
-            <div class="tool-name">Paste-Uppercase</div>
-        </a>
-
-        <a href="https://sematrica.github.io/buffer-ide/" class="tool-card">
-            <div class="tool-name">Buffer-ride-IDE</div>
-        </a>
-
-        <a href="https://sematrica.github.io/zlg-tool/" class="tool-card">
-            <div class="tool-name">Zalgo Glitch</div>
-        </a>
-
-        <a href="https://sematrica.github.io/Useful-Links/" class="tool-card">
-            <div class="tool-name">Useful-links</div>
-        </a>
-
-        <a href="https://sematrica.github.io/DeepSeekV3_LinkLibrary/" class="tool-card">
-            <div class="tool-name">useful_ds_v3</div>
-        </a>
-
-        <a href="https://sematrica.github.io/event_spheres/" class="tool-card">
-            <div class="tool-name">EvtSphereParticles</div>
-            <div class="tool-tag concat-data">JS-Heavy</div>
-
-       <a href="https://sematrica.github.io/CodeBuilder/" class="tool-card">
-            <div class="tool-name">POM FindBy Builder</div>
-            <div class="tool-tag clear">IDE</div>
-
-           <a href="https://sematrica.github.io/catch_circle/" class="tool-card">
-           <div class="tool-name">Catch_Circle</div>
-           <div class="tool-tag clear">focus</div>
-
-       <a href="https://sematrica.github.io/event_horizon-I/" class="tool-card">
-            <div class="tool-name">event_sphere I</div>
-            <div class="tool-tag clear">JS-Heavy</div>
-
-           <a href="https://sematrica.github.io/event_horizon-II/" class="tool-card">
-            <div class="tool-name">event_sphere II</div>
-            <div class="tool-tag clear">JS-Heavy</div>
-
-       <a href="https://sematrica.github.io/robot_panda/" class="tool-card">
-            <div class="tool-name">robot_run_panda</div>
-            <div class="tool-tag clear">vr</div>
-
-       <a href="https://sematrica.github.io/gitCheetSheet/" class="tool-card">
-            <div class="tool-name">Git-CheatSheet I</div>
-            <div class="tool-tag clear">git</div>
-
-
-        <!-- ... rest of tool cards with updated tags ... -->
-        <a href="https://sematrica.github.io/Context-AI-DataSet/" class="tool-card">
-            <div class="tool-name">Context-AI</div>
-            <div class="tool-tag concat-data">concat-dataset-hc</div>
-        </a>
-</div>
+<!-- Top Bar -->
+<div class="title-bar">
+    <div class="title">Curly Quote @FindBy Generator</div>
 </div>
 
-<footer class="apple-footer">
-    <div class="footer-content">
-        <div>© 2025 Sematrica. All rights reserved.</div>
+<div class="editor-container">
+    <!-- Fake Sidebar -->
+    <div class="sidebar">
+        <div class="icon"></div>
+        <div class="icon"></div>
+        <div class="icon"></div>
+        <div class="icon"></div>
     </div>
-</footer>
+
+    <!-- Main area -->
+    <div class="main-area">
+        <!-- Tab -->
+        <div class="file-tab">
+            <div class="filename">FindByGenerator.java</div>
+        </div>
+
+        <!-- Content: Input on left, Output on right -->
+        <div class="content">
+            <div class="input-panel">
+                <div class="panel-title">Enter IDs or XPaths:</div>
+                <textarea id="inputLines" placeholder='input lines:'></textarea>
+                <div class="buttons">
+                    <button onclick="generateSnippets()">Generate</button>
+                    <button onclick="copyOutput()">Copy Code</button>
+                </div>
+            </div>
+
+            <div class="output-panel">
+                <div class="panel-title">Generated Code:</div>
+                <div class="code-block" id="outputCode">
+                    <!-- Snippets appear here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Status bar at bottom -->
+<div class="status-bar">
+    <span>Ready</span>
+</div>
 </body>
 </html>
